@@ -2,10 +2,14 @@ package io.getmedusa.hydra.core.discovery;
 
 import io.getmedusa.hydra.core.discovery.model.ActiveServiceOverview;
 import io.getmedusa.hydra.core.discovery.model.meta.ActiveService;
+import io.getmedusa.hydra.core.heartbeat.model.Fragment;
+import io.getmedusa.hydra.core.heartbeat.model.FragmentHydraRequestWrapper;
+import io.getmedusa.hydra.core.heartbeat.model.FragmentRequestWrapper;
 import io.getmedusa.hydra.core.heartbeat.model.meta.FragmentRequest;
 import io.getmedusa.hydra.core.heartbeat.model.meta.RenderedFragment;
 import io.getmedusa.hydra.core.heartbeat.repository.MemoryRepository;
 import io.getmedusa.hydra.core.routing.DynamicRouteProvider;
+import io.getmedusa.hydra.core.util.JSONUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -21,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @RestController
 public class RegistrationController {
@@ -73,46 +78,56 @@ public class RegistrationController {
     }
 
     @PostMapping("/h/discovery/{publicKey}/requestFragment")
-    public Mono<List<RenderedFragment>> requestFragmentRender(List<FragmentRequest> requests) {
-        Map<String, List<FragmentRequest>> requestsPerService = toMap(requests);
-        List<RenderedFragment> resultList = new ArrayList<>();
-        for(Map.Entry<String, List<FragmentRequest>> entry : requestsPerService.entrySet()) {
-            List<RenderedFragment> renderedFragments = askFragmentsFromService(entry.getKey(), entry.getValue());
-            resultList.addAll(renderedFragments);
-        }
-        return Mono.just(resultList);
-    }
-
-    private List<RenderedFragment> askFragmentsFromService(String key, List<FragmentRequest> value) {
-        final ActiveService service = memoryRepository.findService(key);
-        final ArrayList<RenderedFragment> renderedFragments = new ArrayList<>();
-        for(FragmentRequest request : value) {
-            if(service == null) {
-                renderedFragments.add(null);
+    public Mono<List<RenderedFragment>> requestFragmentRender(@RequestBody final FragmentHydraRequestWrapper requests) {
+        Mono<List<RenderedFragment>> mono = null;
+        final Map<String, List<Fragment>> requestMap = requests.getRequests();
+        for(Map.Entry<String, List<Fragment>> entry : requestMap.entrySet()) {
+            final Mono<List<RenderedFragment>> askFragmentMono = askFragmentsFromService(entry.getKey(), entry.getValue(), requests.getAttributes());
+            if(mono == null) {
+                mono = askFragmentMono;
             } else {
-                renderedFragments.add(askFragmentFromService(service, request));
+                mono = mono
+                        .zipWith(askFragmentMono)
+                        .map(t -> Stream.concat(t.getT1().stream(), t.getT2().stream()).toList());
             }
         }
-        return renderedFragments;
+        return mono;
     }
 
-    public RenderedFragment askFragmentFromService(ActiveService activeService, FragmentRequest request) {
-        WebClient.UriSpec<WebClient.RequestBodySpec> uriSpec = client.post();
-        String uri = activeService.getHost() + ":" + activeService.getPort() + "/h/fragment/_publicKey_/requestFragment"
-                .replace("_publicKey_", publicKey);
-        System.out.println(uri);
-        WebClient.RequestBodySpec bodySpec = uriSpec.uri(uri);
-        WebClient.RequestHeadersSpec<?> headersSpec = bodySpec.bodyValue(activeService);
+    private Mono<List<RenderedFragment>> askFragmentsFromService(String key, List<Fragment> value, Map<String, Object> attributes) {
+        final ActiveService service = memoryRepository.findService(key);
+        final List<RenderedFragment> renderedFragments = new ArrayList<>();
 
-        headersSpec.exchangeToMono(response -> {
+        if(service != null) {
+            return askFragmentFromService(service, value, attributes);
+        } else {
+            for(Fragment request : value) {
+                final RenderedFragment fragment = new RenderedFragment();
+                fragment.setId(request.getId());
+                renderedFragments.add(fragment);
+            }
+            return Mono.just(renderedFragments);
+        }
+    }
+
+    public Mono<List<RenderedFragment>> askFragmentFromService(ActiveService activeService, List<Fragment> request, Map<String, Object> attributes) {
+        FragmentRequestWrapper wrapper = new FragmentRequestWrapper();
+        wrapper.setRequests(request);
+        wrapper.setAttributes(attributes);
+
+        WebClient.UriSpec<WebClient.RequestBodySpec> uriSpec = client.post();
+        String uri = activeService.getWebProtocol() + "://" + activeService.getHost() + ":" + activeService.getPort() + "/h/fragment/_publicKey_/requestFragment"
+                .replace("_publicKey_", publicKey);
+        WebClient.RequestBodySpec bodySpec = uriSpec.uri(uri);
+        WebClient.RequestHeadersSpec<?> headersSpec = bodySpec.bodyValue(wrapper);
+
+        return headersSpec.exchangeToMono(response -> {
             if (response.statusCode().equals(HttpStatus.OK)) {
                 return response.bodyToMono(String.class);
             } else {
-                return response.createException()
-                        .flatMap(Mono::error);
+                return response.createException().flatMap(Mono::error);
             }
-        }).log().subscribe(System.out::println);
-        return null;
+        }).log().map(json -> JSONUtils.deserializeList(json, RenderedFragment.class));
     }
 
     private Map<String, List<FragmentRequest>> toMap(List<FragmentRequest> requests) {
