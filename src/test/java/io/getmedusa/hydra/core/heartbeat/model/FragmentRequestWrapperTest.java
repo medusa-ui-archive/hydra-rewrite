@@ -1,11 +1,13 @@
 package io.getmedusa.hydra.core.heartbeat.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.getmedusa.hydra.core.heartbeat.model.meta.FragmentRequest;
+import io.getmedusa.hydra.core.discovery.model.Fragment;
+import io.getmedusa.hydra.core.discovery.model.FragmentRequestWrapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 
 class FragmentRequestWrapperTest {
 
@@ -14,10 +16,10 @@ class FragmentRequestWrapperTest {
     @Test
     void testSerializable() throws Exception {
         FragmentRequestWrapper wrapper = new FragmentRequestWrapper();
-        FragmentRequest request = new FragmentRequest();
+        Fragment request = new Fragment();
         request.setService("xyz");
         request.setRef("234");
-        //wrapper.setRequests(List.of(request));
+        wrapper.setRequests(List.of(request));
         wrapper.setAttributes(new HashMap<>());
 
         String value = objectMapper.writeValueAsString(wrapper);

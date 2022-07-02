@@ -1,4 +1,4 @@
-package io.getmedusa.hydra.core.heartbeat.repository.meta;
+package io.getmedusa.hydra.core.repository.meta;
 
 import io.getmedusa.hydra.core.discovery.model.meta.ActiveService;
 import org.springframework.stereotype.Repository;

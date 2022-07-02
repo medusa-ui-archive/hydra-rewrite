@@ -1,4 +1,4 @@
-package io.getmedusa.hydra.core.heartbeat.model.meta;
+package io.getmedusa.hydra.core.discovery.model;
 
 public class RenderedFragment {
 

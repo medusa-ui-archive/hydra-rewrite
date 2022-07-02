@@ -1,10 +1,10 @@
-package io.getmedusa.hydra.core.heartbeat.repository;
+package io.getmedusa.hydra.core.repository;
 
 //abstracts distinction between in-memory and redis storage
 
 import io.getmedusa.hydra.core.discovery.model.meta.ActiveService;
-import io.getmedusa.hydra.core.heartbeat.repository.meta.InMemoryStorage;
-import io.getmedusa.hydra.core.heartbeat.repository.meta.RedisRepository;
+import io.getmedusa.hydra.core.repository.meta.InMemoryStorage;
+import io.getmedusa.hydra.core.repository.meta.RedisRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package io.getmedusa.hydra.core.heartbeat.repository.meta;
+package io.getmedusa.hydra.core.repository.meta;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;

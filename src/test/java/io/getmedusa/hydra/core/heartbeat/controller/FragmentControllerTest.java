@@ -1,11 +1,10 @@
 package io.getmedusa.hydra.core.heartbeat.controller;
 
-import io.getmedusa.hydra.core.discovery.RegistrationController;
-import io.getmedusa.hydra.core.heartbeat.model.Fragment;
-import io.getmedusa.hydra.core.heartbeat.model.FragmentHydraRequestWrapper;
-import io.getmedusa.hydra.core.heartbeat.model.meta.RenderedFragment;
-import io.getmedusa.hydra.core.heartbeat.repository.MemoryRepository;
-import io.getmedusa.hydra.core.routing.DynamicRouteProvider;
+import io.getmedusa.hydra.core.discovery.FragmentController;
+import io.getmedusa.hydra.core.discovery.model.Fragment;
+import io.getmedusa.hydra.core.discovery.model.FragmentHydraRequestWrapper;
+import io.getmedusa.hydra.core.discovery.model.RenderedFragment;
+import io.getmedusa.hydra.core.repository.MemoryRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,10 +16,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Map;
 
-public class RegistrationControllerTest {
-
-    @Mock
-    DynamicRouteProvider dynamicRouteProvider;
+class FragmentControllerTest {
 
     @Mock
     MemoryRepository memoryRepository;
@@ -28,14 +24,14 @@ public class RegistrationControllerTest {
     @Mock
     WebClient client;
 
-    private RegistrationController controller;
+    private FragmentController controller;
 
 
 
     @BeforeEach
     public void init() {
         MockitoAnnotations.openMocks(this);
-        controller = new RegistrationController("public", "private", dynamicRouteProvider, memoryRepository, client);
+        controller = new FragmentController("public", "private", memoryRepository, client);
     }
 
     @Test

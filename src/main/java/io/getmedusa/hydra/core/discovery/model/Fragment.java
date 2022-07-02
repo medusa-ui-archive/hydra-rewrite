@@ -1,4 +1,4 @@
-package io.getmedusa.hydra.core.heartbeat.model;
+package io.getmedusa.hydra.core.discovery.model;
 
 public class Fragment {
 

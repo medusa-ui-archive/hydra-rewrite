@@ -1,7 +1,8 @@
 package io.getmedusa.hydra.core.heartbeat.repository;
 
-import io.getmedusa.hydra.core.heartbeat.repository.meta.InMemoryStorage;
-import io.getmedusa.hydra.core.heartbeat.repository.meta.RedisRepository;
+import io.getmedusa.hydra.core.repository.meta.InMemoryStorage;
+import io.getmedusa.hydra.core.repository.meta.RedisRepository;
+import io.getmedusa.hydra.core.repository.MemoryRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
