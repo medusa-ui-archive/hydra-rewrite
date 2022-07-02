@@ -1,8 +1,6 @@
-package io.getmedusa.hydra.core.heartbeat.model;
+package io.getmedusa.hydra.core.discovery.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.getmedusa.hydra.core.discovery.model.Fragment;
-import io.getmedusa.hydra.core.discovery.model.FragmentRequestWrapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

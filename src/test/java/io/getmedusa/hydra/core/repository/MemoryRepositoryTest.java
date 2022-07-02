@@ -1,4 +1,4 @@
-package io.getmedusa.hydra.core.heartbeat.repository;
+package io.getmedusa.hydra.core.repository;
 
 import io.getmedusa.hydra.core.repository.meta.InMemoryStorage;
 import io.getmedusa.hydra.core.repository.meta.RedisRepository;

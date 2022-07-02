@@ -1,4 +1,4 @@
-package io.getmedusa.hydra.core.heartbeat.controller;
+package io.getmedusa.hydra.core.discovery.controller;
 
 import io.getmedusa.hydra.core.discovery.FragmentController;
 import io.getmedusa.hydra.core.discovery.model.Fragment;
