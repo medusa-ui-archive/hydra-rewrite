@@ -15,8 +15,9 @@ public class WeightService {
     private Map<String, Integer> amounts = new HashMap<>();
     private Map<String, Set<Long>> uriVersusVersions = new HashMap<>();
 
+    //% based but as %10, so 10 = 100%, 5 = 50%, etc
     public int generateWeight(String uri, ActiveService activeService) {
-        if(AwakeningType.NEWEST_VERSION_WINS.equals(activeService.getAwakening())) {
+        /*if(AwakeningType.NEWEST_VERSION_WINS.equals(activeService.getAwakening())) {
             Long latestVersion = getLatestVersion(uri);
             if(activeService.getVersion() != latestVersion){
                 return 0;
@@ -25,7 +26,8 @@ public class WeightService {
 
         final Integer amount = amounts.getOrDefault(getKey(uri, activeService), 0);
         if(amount == 0) return 0;
-        return 10 / amount;
+        return 10 / amount;*/
+        return 10;
     }
 
     private void calculateWeight(String uri, ActiveService activeService) {
