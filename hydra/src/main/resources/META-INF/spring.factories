@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=io.getmedusa.hydra.core.config.HydraAutoConfiguration
+org.springframework.context.ApplicationListener=io.getmedusa.hydra.core.config.HydraDefaultPropertiesConfiguration
